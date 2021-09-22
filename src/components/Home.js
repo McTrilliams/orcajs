@@ -1,4 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+
+// Components
+
+
 
 const Home = () => {
     return (
@@ -9,3 +14,5 @@ const Home = () => {
         </>
     )
 }
+
+export default Home;
