@@ -1,7 +1,9 @@
 import React from 'react';
 // Styles
-import { Wrapper, Content, CalcNameInput } from './SingleCalcForm.styles';
+import { Wrapper, Content, CalcNameInput, InpPreview } from './SingleCalcForm.styles';
 import { useEffect, useState } from 'react';
+
+
 
 const CalcName = ({ setCalcName }) => {
     const [state, setState] = useState('')
@@ -12,40 +14,39 @@ const CalcName = ({ setCalcName }) => {
 
     return (
         <CalcNameInput>
-    <input
-        type='text'
-        placeholder='Calc Name...'
-        onChange={e => setState(e.target.value)}
-    ></input>
-    </CalcNameInput>
+            <label><h3>Enter a name:</h3></label>
+            <input
+                type='text'
+                placeholder='Calc Name...'
+                onChange={e => setState(e.target.value)}
+            ></input>
+        </CalcNameInput>
 );
 };
 
 const SelectField = ({ name, 
                     dfault, 
-                    Setter, 
+                    Setter,
+                    options, 
                     tmout = 20}) => {
     const [state, setState] = useState(dfault ? dfault : '')
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            Setter(state);
-        }, tmout)
-        return () => clearTimeout(timer);
+        Setter(state)
     }, [Setter, state])
+
+    const optionslist = options.map((val) => (
+        <option value={val}>{val}</option>
+    ))
 
     return (
         <label><h3>{ name }</h3>
-            <select name={name} onChange={e => setState(e.target.value)}>
-                {/* For loop over the option mapper or another function to construct
-                that object. */}
+            <select onChange={e => setState(e.target.value)}>
+                {optionslist}
             </select>
         </label>
     )
 };
-
-
-
 
 const CalcType = ({ setCalcType }) => {
     // Set the ORCA Calculation type
@@ -147,43 +148,150 @@ const Multiplicity = ({ setMultiplicity }) => {
 );
 };
 
-// const AdvancedOptionsButton = () => (
-//     <AdvOptionsButtonWrapper>
-//     <button type='button'>Adv. Options</button>
-//     </AdvOptionsButtonWrapper>
-// );
+const SpinRestriction = ({ setSpinRestriction }) => {
+    const [state, setState] = useState('UKS');
 
+    useEffect(() => (
+        setSpinRestriction(state)
+    ))
+
+    return (
+        <label><h3>Spin Restriction</h3>
+            <select onChange={e => setState(e.target.value)}>
+                <option value='UKS'>UKS</option>
+            </select>
+        </label>
+    );
+}
+
+const ResolutionId = ({ setResolutionId }) => {
+    const [state, setState] = useState(false);
+
+    useEffect(() => (setResolutionId(state)));
+
+    return (
+        <label><h3>RI?</h3>
+        <input type="checkbox" onChange={e => setState(!state)} />
+        </label>
+    );
+
+}
+
+const AltBasisSet = ({ setAltBasisSet, resolutionId }) => {
+    const [state, setState] = useState('');
+    // const [isActive, setIsActive] = useState(false);
+
+    useEffect(() => (
+        setAltBasisSet(state)
+    ))
+
+    return (
+        <label><h3>Alt. Basis Set</h3>
+            <select onChange={e => setState(e.target.value)} disabled={!resolutionId}>
+                <option value="def2-SVP">def2-SVP</option>
+                <option value="def2-TZVP">def2-TZVP</option>
+                </select>
+        </label>
+    )
+}
+
+const SolventModel = ({ setSolventModel }) => {
+    const [state, setState] = useState(null);
+
+    useEffect(() => (
+        setSolventModel(state)
+    ))
+
+    return (
+        <label><h3>Solvent Model</h3>
+            <select onChange={e => setState(e.target.value)}>
+                <option value={null}>None</option>
+                <option value='CPCMC'>CPCMC</option>
+                <option value='COSMO'>COSMO</option>
+                </select>
+        </label>
+    );
+}
+
+const Solvent = ({ setSolvent, solventModel}) => {
+    const [state, setState] = useState('');
+
+    useEffect(() => (
+        setSolvent(state)
+    ))
+
+    return(
+        <label><h3>Solvent</h3>
+            <select onChange={e => setState(e.target.value)} disabled={solventModel ? false : true}>
+                <option value={null}>None</option>
+                <option value='CPCMC'>CPCMC</option>
+                <option value='COSMO'>COSMO</option>
+                </select>
+        </label>
+    )
+}
 
 
 const SingleCalcForm = () => {
+    /**
+     * Form for the generation of a single ORCA calculation.
+     * This will be adapted to serve other text file creations as needed.
+     * The only software that will not be supported begins with a `G` due
+     * and you'd wonder why so many people were `drawn` to them
+     * with their hostile nature toward use of other software packages,
+     * desipte their documentation having a lowering utility rating than
+     * your average dumpster contents.
+     */
     const [calcType, setCalcType] = useState('');
     const [functional, setFunctional] = useState('');
     const [basisSet, setBasisSet] = useState('');
     const [charge, setCharge] = useState('');
     const [multiplicity, setMultiplicity] = useState('');
     const [calcName, setCalcName] = useState('');
+    const [spinRestriction, setSpinRestriction] = useState('');
+    const [resolutionId, setResolutionId] = useState(false);
+    const [altBasisSet, setAltBasisSet] = useState('');
+    // const [calcPreviewStr, setCalcPreviewStr] = useState('');
+    // Components to create
+    const [solventModel, setSolventModel] = useState('');
+    const [solvent, setSolvent] = useState('');
+
+    const calculation = {
+        calcType: calcType,
+        functional: functional,
+        basisSet: basisSet,
+    }
+
+    const calcTypes = ['TightOpt', 'NumFreq'];
 
     return (
         <Wrapper>
             <Content>
                     <CalcName setCalcName={setCalcName}/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+
                     <CalcType setCalcType={setCalcType} />
+                    <SelectField name='Calc Type:' dfault='' Setter={setCalcType} options={calcTypes} tmout={10} />
                     <Functional setFunctional={setFunctional} />
                     <BasisSet setBasisSet={setBasisSet}/>
                     <Charge setCharge={setCharge} />
                     <Multiplicity setMultiplicity={setMultiplicity}/>
+                    <SpinRestriction setSpinRestriction={setSpinRestriction} />
+                    <ResolutionId setResolutionId={setResolutionId} />
+                    <AltBasisSet setAltBasisSet={setAltBasisSet} resolutionId={resolutionId} />
+                    <SolventModel setSolventModel={setSolventModel} />
+                    <Solvent setSolvent={setSolvent} solventModel={solventModel} />
                     {/* <AdvancedOptions /> */}
             </Content>
             <Content>
-                <h1>Calc name: {calcName} </h1>
-                <h1>Calc type: {calcType} </h1>
-                <h1>Functional: {functional} </h1>
-                <h1>Basis Set: {basisSet}</h1>
-                <h1>Charge: {charge}</h1>
-                <h1>Multiplicity: {multiplicity}</h1>
-            </Content>
+        </Content>
+        <h3>{calculation.calcType, calculation.basisSet}</h3>
+
         </Wrapper>
-        
+
     );
 }
 

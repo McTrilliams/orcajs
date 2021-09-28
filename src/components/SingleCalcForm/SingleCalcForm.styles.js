@@ -8,17 +8,21 @@ export const Wrapper = styled.div`
 `;
 
 export const Content = styled.div`
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    grid-gap: 2rem;
-    max-width: var(--maxWidth);
+    /* display: grid;
+    grid-template-rows: 0.5fr 0.5fr 0.5fr 0.5fr;
+    grid-template-areas:
+        "sidebar main main main main"
+        "sidebar content content content content";
+    text-align: center;
+    grid-gap: 0.2rem; */
+    align-content: center;
     width: 100%;
     height: 500px;
     background: var(--lightGrey);
     margin: 0 auto;
     border-radius: 40px;
     color: var(--white);
-    padding: 30px 20px;
+    padding: 0.1rem;
 
 
     h1 {
@@ -30,26 +34,22 @@ export const Content = styled.div`
     }
 `;
 
-export const AdvOptionsButtonWrapper = styled.button`
-    display: block;
-    background: var(--darkGrey);
-    width: 25%;
-    min-width: 200px;
-    height: 60px;
-    border-radius: 30px;
-    color: var(--white);
-    border: 0;
-    font-size: var(--fontBig);
-    margin: 20px auto;
-    transition: all 0.3s;
-    outline: none;
-    cursor: pointer;
-
-    :hover {
-        opacity: 0.8;
-    }
+export const InpPreview = styled.textarea`
+    width: 400px;
+    height: 50vh;
+    padding: 10px;
 `;
 
 export const CalcNameInput = styled.div`
-
+        width: fit-content;
+        justify-items: center;
+        border-width: 2;
+        border-style: solid;
+        border-color: black;
+        padding: 0.5em;
+        
+    input {
+        width: 15ch;
+    }
 `;
+
