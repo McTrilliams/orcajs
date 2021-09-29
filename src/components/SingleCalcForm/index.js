@@ -4,6 +4,39 @@ import { Wrapper, Content, CalcNameInput, InpPreview } from './SingleCalcForm.st
 import { useEffect, useState } from 'react';
 
 
+const SelectField = ({ 
+    name,
+    Setter,
+    options,
+    dfault = options[0],
+    tmout = 20 }) => {
+    const [state, setState] = useState(dfault)
+
+    useEffect(() => {
+        Setter(state)
+    }, [Setter, state])
+
+    const optionslist = options.map((val) => (
+        <option value={val}>{val}</option>
+    ))
+
+    return (
+        <label><h3>{name}</h3>
+            <select onChange={e => setState(e.target.value)}>
+                {optionslist}
+            </select>
+        </label>
+    )
+};
+
+const CheckBox = ({
+    name,
+    Setter,
+    dfault,
+}) => {
+    const [state, setState] = useState('')
+    
+}
 
 const CalcName = ({ setCalcName }) => {
     const [state, setState] = useState('')
@@ -24,99 +57,13 @@ const CalcName = ({ setCalcName }) => {
 );
 };
 
-const SelectField = ({ name, 
-                    dfault, 
-                    Setter,
-                    options, 
-                    tmout = 20}) => {
-    const [state, setState] = useState(dfault ? dfault : '')
-
-    useEffect(() => {
-        Setter(state)
-    }, [Setter, state])
-
-    const optionslist = options.map((val) => (
-        <option value={val}>{val}</option>
-    ))
-
-    return (
-        <label><h3>{ name }</h3>
-            <select onChange={e => setState(e.target.value)}>
-                {optionslist}
-            </select>
-        </label>
-    )
-};
-
-const CalcType = ({ setCalcType }) => {
-    // Set the ORCA Calculation type
-    const [state, setState] = useState('TightOpt');
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setCalcType(state);
-        }, 10)
-
-        return () => clearTimeout(timer);
-    }, [setCalcType, state])
-
-    return (
-        <label><h3>Calc Type:{' '}</h3>
-            <select name="calcType" onChange={event => setState(event.target.value)}>
-                <option value="TightOpt">TightOpt</option>
-                <option value="Opt">Opt</option>
-                <option value="NumFreq">NumFreq</option>
-                <option value="Single Point">Single Point</option>
-                <option value="Mossbauer">Mossbauer</option> // TIL there's a js component named Mossbauer, who woulda guessed.
-            </select>
-        </label>
-    );
-}
-
-const Functional = ({ setFunctional }) => {
-    const [state, setState] = useState('BP86')
-
-    useEffect(() => {
-        setFunctional(state)
-    })
-
-    return (
-    <label><h3>Functional:{' '}</h3>
-    <select name="functionalSelect" onChange={e => setState(e.target.value)}>
-        <option value="BP86">BP86</option>
-        <option value="B3LYP">B3LYP</option>
-        <option value="TPSSh">TPSSh</option>
-    </select>
-    </label>
-);
-}
-
-const BasisSet = ({ setBasisSet }) => {
-    const [state, setState] = useState('def2-SVP')
-
-    useEffect(() => {
-        setBasisSet(state)
-    })
-
-    return (
-    <label><h3>Basis Set: </h3>
-    <select name="basisSetSelectInp" onChange={e => setState(e.target.value)}>
-        <option value="def2-SVP">def2-SVP</option>
-            <option value="def2-TZVP">def2-TZVP</option>
-            <option value="def2-QZVP">def2-QZVP</option>
-            <option value="6-31">6-31</option>
-            <option value="6-311">6-311</option>
-        </select>
-    </label>
-);
-};
 
 const Charge = ({ setCharge }) => {
     const [state, setState] = useState(0);
 
-    useEffect(() => {
+    useEffect(() => (
         setCharge(state)
-    })
+    ), [setCharge, state])
     return (
     <label><h3>Charge:{' '}</h3>
     <input 
@@ -133,9 +80,9 @@ const Charge = ({ setCharge }) => {
 const Multiplicity = ({ setMultiplicity }) => {
     const [state, setState] = useState(1);
 
-    useEffect(() => {
+    useEffect(() => (
         setMultiplicity(state)
-    })
+    ), [setMultiplicity, state])
 
     return (
     <label><h3>Multiplicity:{' '}</h3>
@@ -148,26 +95,10 @@ const Multiplicity = ({ setMultiplicity }) => {
 );
 };
 
-const SpinRestriction = ({ setSpinRestriction }) => {
-    const [state, setState] = useState('UKS');
-
-    useEffect(() => (
-        setSpinRestriction(state)
-    ))
-
-    return (
-        <label><h3>Spin Restriction</h3>
-            <select onChange={e => setState(e.target.value)}>
-                <option value='UKS'>UKS</option>
-            </select>
-        </label>
-    );
-}
-
 const ResolutionId = ({ setResolutionId }) => {
     const [state, setState] = useState(false);
 
-    useEffect(() => (setResolutionId(state)));
+    useEffect(() => (setResolutionId(state)), [setResolutionId, state]);
 
     return (
         <label><h3>RI?</h3>
@@ -183,7 +114,7 @@ const AltBasisSet = ({ setAltBasisSet, resolutionId }) => {
 
     useEffect(() => (
         setAltBasisSet(state)
-    ))
+    ), [setAltBasisSet, state])
 
     return (
         <label><h3>Alt. Basis Set</h3>
@@ -200,7 +131,7 @@ const SolventModel = ({ setSolventModel }) => {
 
     useEffect(() => (
         setSolventModel(state)
-    ))
+    ), [setSolventModel, state])
 
     return (
         <label><h3>Solvent Model</h3>
@@ -218,7 +149,7 @@ const Solvent = ({ setSolvent, solventModel}) => {
 
     useEffect(() => (
         setSolvent(state)
-    ))
+    ), [setSolvent, state])
 
     return(
         <label><h3>Solvent</h3>
@@ -262,7 +193,11 @@ const SingleCalcForm = () => {
         basisSet: basisSet,
     }
 
-    const calcTypes = ['TightOpt', 'NumFreq'];
+    const calcTypeOptions = ['TightOpt', 'Opt', 'NumFreq', 'AnFreq', 'Single Point', 'Mossbauer'];
+    const functionalOptions = ['BP86', 'B3LYP']
+    const basisSetOptions = ['def2-SVP', 'def2-TZVP', 'def2-QZVP', '6-31', '6-31G', '6-311G']
+    const spinRestrictionOptions = ['UKS']
+
 
     return (
         <Wrapper>
@@ -272,14 +207,12 @@ const SingleCalcForm = () => {
                     <br/>
                     <br/>
                     <br/>
-
-                    <CalcType setCalcType={setCalcType} />
-                    <SelectField name='Calc Type:' dfault='' Setter={setCalcType} options={calcTypes} tmout={10} />
-                    <Functional setFunctional={setFunctional} />
-                    <BasisSet setBasisSet={setBasisSet}/>
+                    <SelectField name='Spin Restriction' Setter={setSpinRestriction} options={spinRestrictionOptions} tmout={10} />
+                    <SelectField name='Calc Type:' Setter={setCalcType} options={calcTypeOptions} tmout={10} />
+                    <SelectField name='Functional:'Setter={setFunctional} options={functionalOptions} tmout={10} />
+                    <SelectField name='Basis Set:' Setter={setFunctional} options={basisSetOptions} tmout={10} />
                     <Charge setCharge={setCharge} />
                     <Multiplicity setMultiplicity={setMultiplicity}/>
-                    <SpinRestriction setSpinRestriction={setSpinRestriction} />
                     <ResolutionId setResolutionId={setResolutionId} />
                     <AltBasisSet setAltBasisSet={setAltBasisSet} resolutionId={resolutionId} />
                     <SolventModel setSolventModel={setSolventModel} />
